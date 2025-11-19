@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monetx NCM Emulator</title>
+    <link rel="icon" type="image/png" href="/static/monetx-logo.png">
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header with glass effect -->
+        <header class="glass-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="/static/monetx-logo.png" alt="Monetx Logo" class="logo">
+                    <h1>NCM Emulator</h1>
+                </div>
+                <div class="status-indicator">
+                    <span id="connection-status" class="status-dot disconnected"></span>
+                    <span id="status-text">Disconnected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <!-- Connection Panel -->
+            <section class="connection-panel glass-card">
+                <h2><i class="fas fa-network-wired"></i> Connection Settings</h2>
+                <div class="connection-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="host">Host</label>
+                            <input type="text" id="host" placeholder="192.168.1.1" value="192.168.1.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="port">Port</label>
+                            <input type="number" id="port" placeholder="22" value="22">
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" placeholder="admin" value="admin">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="Enter password">
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button id="connect-btn" class="btn btn-primary">
+                            <i class="fas fa-plug"></i> Connect
+                        </button>
+                        <button id="disconnect-btn" class="btn btn-secondary" disabled>
+                            <i class="fas fa-unlink"></i> Disconnect
+                        </button>
+                        <button id="save-session-btn" class="btn btn-outline">
+                            <i class="fas fa-save"></i> Save Session
+                        </button>
+                        <button id="load-session-btn" class="btn btn-outline">
+                            <i class="fas fa-folder-open"></i> Load Session
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Terminal Section -->
+            <section class="terminal-section glass-card">
+                <div class="terminal-header">
+                    <div class="toolbar-left">
+                        <button id="clear-terminal" class="btn btn-secondary">
+                            <i class="fas fa-trash"></i> Clear Terminal
+                        </button>
+                        <button id="copy-output" class="btn btn-secondary">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button id="save-output" class="btn btn-secondary">
+                            <i class="fas fa-save"></i> Save Output
+                        </button>
+                    </div>
+                    
+                    <!-- Pagination controls (exactly like Putty_own.py) -->
+                    <div class="pagination-controls">
+                        <label>Pagination:</label>
+                        <div class="pagination-toggle">
+                            <input type="checkbox" id="auto-pagination" checked>
+                            <label for="auto-pagination">Auto-handle --More--</label>
+                        </div>
+                        <button id="send-space" class="btn btn-warning" disabled>
+                            <i class="fas fa-forward"></i> Send Space
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-right">
+                        <button id="fullscreen" class="btn btn-secondary">
+                            <i class="fas fa-expand"></i> Fullscreen
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="terminal-container">
+                    <div id="terminal-output" class="terminal-output"></div>
+                    <div class="terminal-input-container">
+                        <input type="text" id="terminal-input" class="terminal-input" placeholder="Enter command..." disabled>
+                        <button id="send-btn" class="btn btn-primary btn-sm" disabled>
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Commands -->
+            <section class="quick-commands glass-card">
+                <h2><i class="fas fa-bolt"></i> Quick Commands</h2>
+                <div class="command-grid">
+                    <button class="cmd-btn" data-command="show version">
+                        <i class="fas fa-info-circle"></i> show version
+                    </button>
+                    <button class="cmd-btn" data-command="show running-config">
+                        <i class="fas fa-cog"></i> show run
+                    </button>
+                    <button class="cmd-btn" data-command="show ip route">
+                        <i class="fas fa-route"></i> show ip route
+                    </button>
+                    <button class="cmd-btn" data-command="show interfaces">
+                        <i class="fas fa-ethernet"></i> show interfaces
+                    </button>
+                    <button class="cmd-btn" data-command="show logging">
+                        <i class="fas fa-list-alt"></i> show log
+                    </button>
+                    <button class="cmd-btn" data-command="ping 8.8.8.8">
+                        <i class="fas fa-ping"></i> ping 8.8.8.8
+                    </button>
+                    <button class="cmd-btn" data-command="traceroute 8.8.8.8">
+                        <i class="fas fa-map-signs"></i> traceroute
+                    </button>
+                    <button class="cmd-btn" data-command="configure terminal">
+                        <i class="fas fa-tools"></i> config term
+                    </button>
+                </div>
+            </section>
+
+            <!-- Configuration Upload -->
+            <section class="config-upload glass-card">
+                <h2><i class="fas fa-upload"></i> Configuration Upload</h2>
+                <div class="upload-container">
+                    <div class="upload-tabs">
+                        <button class="tab-btn active" data-tab="file-upload">
+                            <i class="fas fa-file-upload"></i> Upload File
+                        </button>
+                        <button class="tab-btn" data-tab="batch-commands">
+                            <i class="fas fa-terminal"></i> Batch Commands
+                        </button>
+                    </div>
+                    
+                    <!-- File Upload Tab -->
+                    <div id="file-upload" class="tab-content active">
+                        <div class="upload-area" id="upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag and drop configuration file here or click to browse</p>
+                            <input type="file" id="config-file" accept=".txt,.cfg,.conf,.config" style="display: none;">
+                            <button class="btn btn-outline" onclick="document.getElementById('config-file').click()">
+                                <i class="fas fa-folder-open"></i> Choose File
+                            </button>
+                        </div>
+                        <div id="file-info" class="file-info hidden">
+                            <div class="file-details">
+                                <span id="file-name"></span>
+                                <span id="file-size"></span>
+                                <button id="clear-file" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="upload-options">
+                            <label>
+                                <input type="checkbox" id="apply-config" checked>
+                                Apply configuration immediately after upload
+                            </label>
+                            <label>
+                                <input type="checkbox" id="save-config">
+                                Save configuration to startup config
+                            </label>
+                        </div>
+                        <button id="upload-btn" class="btn btn-primary" disabled>
+                            <i class="fas fa-upload"></i> Upload Configuration
+                        </button>
+                    </div>
+                    
+                    <!-- Batch Commands Tab -->
+                    <div id="batch-commands" class="tab-content">
+                        <div class="batch-container">
+                            <label for="batch-commands-text">Enter commands (one per line):</label>
+                            <textarea id="batch-commands-text" rows="10" placeholder="Enter configuration commands here, one per line...
+Example:
+interface GigabitEthernet0/1
+ description Uplink to ISP
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown"></textarea>
+                            <div class="batch-options">
+                                <label>
+                                    <input type="checkbox" id="confirm-each" checked>
+                                    Confirm each command execution
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="show-output" checked>
+                                    Show command output
+                                </label>
+                            </div>
+                            <div class="batch-actions">
+                                <button id="execute-batch" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> Execute Commands
+                                </button>
+                                <button id="clear-batch" class="btn btn-secondary">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                                <button id="save-batch" class="btn btn-outline">
+                                    <i class="fas fa-save"></i> Save Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Connecting...</p>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

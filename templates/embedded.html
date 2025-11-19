@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCM SSH Emulator - Embedded</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent !important;
+        }
+        .container {
+            max-width: 100%;
+            padding: 10px;
+        }
+        .glass-header {
+            display: none;
+        }
+        .connection-panel {
+            display: none;
+        }
+        .terminal-section {
+            margin: 0;
+        }
+        .quick-commands {
+            display: none;
+        }
+        .embedded-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        .embedded-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .embedded-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="embedded-controls">
+            <button class="embedded-btn" onclick="toggleFullscreen()">
+                <i class="fas fa-expand"></i> Fullscreen
+            </button>
+            <button class="embedded-btn" onclick="closeEmulator()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        
+        <main class="main-content">
+            <section class="terminal-section glass-card">
+                <div class="terminal-header">
+                    <h2><i class="fas fa-terminal"></i> SSH Terminal</h2>
+                    <div class="terminal-controls">
+                        <button id="clear-terminal-btn" class="btn btn-sm btn-outline">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                        <button id="copy-btn" class="btn btn-sm btn-outline">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="terminal-container">
+                    <div id="terminal-output" class="terminal-output"></div>
+                    <div class="terminal-input-container">
+                        <input type="text" id="terminal-input" class="terminal-input" placeholder="Enter command..." disabled>
+                        <button id="send-btn" class="btn btn-primary btn-sm" disabled>
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        // Embedded mode specific functions
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        function closeEmulator() {
+            if (window.parent !== window) {
+                // Send message to parent window to close
+                window.parent.postMessage({action: 'close_ssh_emulator'}, '*');
+            }
+        }
+        
+        // Auto-connect if device info is provided
+        window.addEventListener('load', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const deviceId = urlParams.get('device_id');
+            const sessionToken = urlParams.get('session_token');
+            
+            if (deviceId && sessionToken) {
+                try {
+                    // Fetch device info and auto-connect
+                    const response = await fetch(`/nms/api/device-info/${deviceId}`, {
+                        headers: {
+                            'X-Session-Token': sessionToken
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const deviceInfo = await response.json();
+                        // Auto-connect to device
+                        // This would be implemented based on your needs
+                    }
+                } catch (error) {
+                    console.error('Auto-connect failed:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+    
